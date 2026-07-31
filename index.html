@@ -10,8 +10,13 @@
 <meta name="apple-mobile-web-app-title" content="粉粉打卡">
 <meta name="theme-color" content="#ffe3ee">
 <meta name="mobile-web-app-capable" content="yes">
-<link rel="manifest" href="/manifest.json">
-<link rel="apple-touch-icon" href="/icon-180.png">
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="https://thub007.github.io/oe/icon-180.png">
+<link rel="apple-touch-icon" sizes="180x180" href="https://thub007.github.io/oe/icon-180.png">
+<link rel="apple-touch-icon" sizes="152x152" href="https://thub007.github.io/oe/icon-180.png">
+<link rel="apple-touch-icon" sizes="120x120" href="https://thub007.github.io/oe/icon-180.png">
+<link rel="icon" sizes="192x192" href="https://thub007.github.io/oe/icon-192.png">
+<link rel="icon" sizes="512x512" href="https://thub007.github.io/oe/icon-512.png">
 <!-- PWA 离线缓存 Service Worker 注册 -->
 <style>
 /* ========== 设计变量：马卡龙粉色系 ========== */
@@ -424,6 +429,39 @@ body::after{
   color:var(--pink-400);
 }
 
+/* 日历打卡项目区域 */
+.cal-items-section{
+  margin-top:16px;
+}
+.cal-items-header{
+  display:flex;align-items:center;gap:8px;font-size:16px;font-weight:800;
+  color:var(--pink-600);margin-bottom:12px;
+}
+.cal-empty{padding:20px;}
+
+/* 偶尔打卡操作区 */
+.occ-actions{
+  margin-top:16px;display:flex;flex-direction:column;gap:10px;align-items:center;
+}
+.occ-confirm-btn{
+  width:100%;max-width:280px;padding:14px 28px;border:none;border-radius:var(--radius);
+  background:linear-gradient(135deg,var(--pink-400),var(--pink-500));
+  color:#fff;font-size:16px;font-weight:700;cursor:pointer;
+  box-shadow:var(--shadow-pink);display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:all .25s cubic-bezier(.34,1.56,.64,1);
+  font-family:inherit;
+}
+.occ-confirm-btn:active{transform:scale(.96);}
+.occ-confirm-btn:disabled{opacity:.5;pointer-events:none;}
+.occ-confirm-btn svg{width:20px;height:20px;}
+.occ-selected-info{
+  font-size:13px;color:var(--text-soft);font-weight:600;
+}
+.cal-day.occ-selected{
+  background:var(--lilac);color:#9b6fd9;font-weight:800;
+  box-shadow:0 2px 8px rgba(155,111,217,.2);
+}
+
 /* 页面切换 */
 .page{display:none;animation:fadeIn .3s ease;}
 .page.active{display:block;}
@@ -554,6 +592,75 @@ body::after{
         <div class="cal-detail-title"><span id="detailDate"></span></div>
         <div class="cal-detail-list" id="detailList"></div>
       </div>
+
+      <div class="cal-items-section">
+        <div class="cal-items-header">
+          <span class="title-deco"></span>
+          <span>打卡项目</span>
+        </div>
+        <div class="add-bar">
+          <input class="add-input" id="calAddInput" placeholder="输入日历打卡项目名称..." maxlength="20"/>
+          <button class="add-btn" id="calAddBtn" title="添加">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          </button>
+        </div>
+        <div class="check-list" id="calItemList"></div>
+      </div>
+    </section>
+
+    <!-- 偶尔打卡 -->
+    <section class="page" id="page-occasional">
+      <div class="page-header">
+        <div class="page-title">
+          <span class="title-deco"></span>
+          偶尔打卡
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--pink-400);width:22px;height:22px;">
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="12 6 12 12 16 14"/>
+          </svg>
+        </div>
+        <div class="page-date" id="occToday"></div>
+      </div>
+
+      <div class="cal-stats">
+        <div class="stat-card">
+          <div class="stat-num" id="occStatMonth">0</div>
+          <div class="stat-label">本月完成</div>
+        </div>
+        <div class="stat-card alt">
+          <div class="stat-num" id="occStatTotal">0</div>
+          <div class="stat-label">累计完成</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="occStatStreak">0</div>
+          <div class="stat-label">连续完成</div>
+        </div>
+      </div>
+
+      <div class="cal-card">
+        <div class="cal-head">
+          <button class="cal-nav" id="occPrevMonth">‹</button>
+          <div class="cal-month" id="occCalMonth">2026年7月</div>
+          <button class="cal-nav" id="occNextMonth">›</button>
+        </div>
+        <div class="cal-week">
+          <span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span>
+        </div>
+        <div class="cal-days" id="occCalDays"></div>
+        <div class="cal-legend">
+          <div class="legend-item"><span class="legend-dot full"></span>已完成</div>
+          <div class="legend-item"><span class="legend-dot today"></span>今天</div>
+          <div class="legend-item"><span class="legend-dot" style="background:var(--lilac);border-radius:4px;"></span>已选中</div>
+        </div>
+      </div>
+
+      <div class="occ-actions">
+        <button class="occ-confirm-btn" id="occConfirmBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          确认打卡
+        </button>
+        <div class="occ-selected-info" id="occSelectedInfo">请点击日历选择日期</div>
+      </div>
     </section>
 
   </main>
@@ -564,30 +671,50 @@ body::after{
 <script>
 /* ========================================================
    数据层：localStorage 持久化 + 自动保存
+   两个模块完全独立：
+   - dailyData: 每日打卡（项目列表 + 每日打勾记录）
+   - calData:   日历打卡（项目列表 + 每个项目自己的打卡日期集合）
    ======================================================== */
-const STORE_KEY = 'pinkcheck_data_v1';
+const DAILY_KEY = 'pinkcheck_daily_v2';
+const CAL_KEY = 'pinkcheck_cal_v2';
+const OCC_KEY = 'pinkcheck_occ_v2';
 const NAV_KEY = 'pinkcheck_nav_v1';
-const defaultData = { items: [], records: {} }; // records: { 'YYYY-MM-DD': { itemId:true } }
 
-let data = loadData();
-let navOrder = loadNavOrder(); // ['daily','calendar']
+let dailyData = loadData(DAILY_KEY, { items:[], records:{} });
+let calData   = loadData(CAL_KEY,   { items:[], dates:{} }); // dates: { itemId: Set of date strings }
+let occData   = loadData(OCC_KEY,   { dates:[] }); // dates: ['YYYY-MM-DD', ...]
+let navOrder  = loadNavOrder();
 
-function loadData(){
+function loadData(key, defaults){
   try{
-    const raw = localStorage.getItem(STORE_KEY);
-    if(raw){ const d = JSON.parse(raw); return { items:d.items||[], records:d.records||{} }; }
+    const raw = localStorage.getItem(key);
+    if(raw){ const d = JSON.parse(raw);
+      if(key===CAL_KEY){
+        return { items:d.items||[], dates:d.dates||{} };
+      }
+      if(key===OCC_KEY){
+        return { dates:d.dates||[] };
+      }
+      return { items:d.items||[], records:d.records||{} };
+    }
   }catch(e){}
-  return JSON.parse(JSON.stringify(defaultData));
+  return JSON.parse(JSON.stringify(defaults));
 }
 function loadNavOrder(){
   try{
     const raw = localStorage.getItem(NAV_KEY);
-    if(raw){ const a = JSON.parse(raw); if(Array.isArray(a)&&a.length===2) return a; }
+    if(raw){ const a = JSON.parse(raw); if(Array.isArray(a)&&a.length===3) return a; }
   }catch(e){}
-  return ['daily','calendar'];
+  return ['daily','calendar','occasional'];
 }
-function saveData(){
-  try{ localStorage.setItem(STORE_KEY, JSON.stringify(data)); }catch(e){}
+function saveDaily(){
+  try{ localStorage.setItem(DAILY_KEY, JSON.stringify(dailyData)); }catch(e){}
+}
+function saveCal(){
+  try{ localStorage.setItem(CAL_KEY, JSON.stringify(calData)); }catch(e){}
+}
+function saveOcc(){
+  try{ localStorage.setItem(OCC_KEY, JSON.stringify(occData)); }catch(e){}
 }
 function saveNav(){
   try{ localStorage.setItem(NAV_KEY, JSON.stringify(navOrder)); }catch(e){}
@@ -621,6 +748,10 @@ const navConfig = {
   calendar: {
     icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--pink-500)"><rect x="3" y="4" width="18" height="18" rx="3"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><circle cx="8" cy="14" r="1" fill="currentColor"/><circle cx="12" cy="14" r="1" fill="currentColor"/><circle cx="16" cy="17" r="1" fill="currentColor"/></svg>',
     label:'日历打卡'
+  },
+  occasional: {
+    icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--pink-500)"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+    label:'偶尔打卡'
   }
 };
 function renderNav(){
@@ -677,6 +808,7 @@ function switchTab(key){
   $('#page-'+key).classList.add('active');
   renderNav();
   if(key==='calendar') renderCalendar();
+  if(key==='occasional') renderOccasional();
 }
 
 /* ========================================================
@@ -684,8 +816,8 @@ function switchTab(key){
    ======================================================== */
 function renderDaily(){
   const today = todayStr();
-  const todayRec = data.records[today] || {};
-  const items = data.items;
+  const todayRec = dailyData.records[today] || {};
+  const items = dailyData.items;
   const doneCount = items.filter(it=>todayRec[it.id]).length;
   const total = items.length;
   const pct = total>0 ? doneCount/total : 0;
@@ -731,64 +863,61 @@ function renderDaily(){
 
   // 绑定事件
   list.querySelectorAll('.check-circle').forEach(c=>{
-    c.addEventListener('click', ()=>toggleCheck(c.dataset.id));
+    c.addEventListener('click', ()=>toggleDailyCheck(c.dataset.id));
   });
   list.querySelectorAll('.item-name').forEach(n=>{
     n.addEventListener('blur', ()=>{
       const v = n.textContent.trim();
       const id = n.dataset.id;
-      const it = data.items.find(x=>x.id===id);
-      if(it && v){ it.name=v; saveData(); }
+      const it = dailyData.items.find(x=>x.id===id);
+      if(it && v){ it.name=v; saveDaily(); }
       else if(it && !v){ n.textContent = it.name; }
     });
     n.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); n.blur(); } });
   });
   list.querySelectorAll('.item-del').forEach(b=>{
-    b.addEventListener('click', ()=>deleteItem(b.dataset.id));
+    b.addEventListener('click', ()=>deleteDailyItem(b.dataset.id));
   });
 }
 
-function escapeHtml(s){ return s.replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
-
-function addItem(){
+function addDailyItem(){
   const input = $('#addItemInput');
   const name = input.value.trim();
   if(!name){ showToast('请输入项目名称～'); input.focus(); return; }
-  if(data.items.length>=20){ showToast('最多 20 个项目哦'); return; }
-  const item = { id:'i_'+Date.now()+'_'+Math.random().toString(36).slice(2,6), name, lastTime:'' };
-  data.items.push(item);
-  saveData();
+  if(dailyData.items.length>=20){ showToast('最多 20 个项目哦'); return; }
+  const item = { id:'di_'+Date.now()+'_'+Math.random().toString(36).slice(2,6), name, lastTime:'' };
+  dailyData.items.push(item);
+  saveDaily();
   input.value='';
   renderDaily();
   showToast('添加成功～');
 }
 
-function toggleCheck(id){
+function toggleDailyCheck(id){
   const today = todayStr();
-  if(!data.records[today]) data.records[today] = {};
-  const rec = data.records[today];
+  if(!dailyData.records[today]) dailyData.records[today] = {};
+  const rec = dailyData.records[today];
   if(rec[id]){
     delete rec[id];
   }else{
     rec[id] = true;
-    const it = data.items.find(x=>x.id===id);
+    const it = dailyData.items.find(x=>x.id===id);
     if(it) it.lastTime = new Date().toTimeString().slice(0,8);
   }
-  saveData();
+  saveDaily();
   renderDaily();
 }
 
-function deleteItem(id){
-  data.items = data.items.filter(x=>x.id!==id);
-  // 清理所有记录中的该 id
-  Object.keys(data.records).forEach(d=>{ if(data.records[d][id]) delete data.records[d][id]; });
-  saveData();
+function deleteDailyItem(id){
+  dailyData.items = dailyData.items.filter(x=>x.id!==id);
+  Object.keys(dailyData.records).forEach(d=>{ if(dailyData.records[d][id]) delete dailyData.records[d][id]; });
+  saveDaily();
   renderDaily();
   showToast('已删除～');
 }
 
 /* ========================================================
-   日历打卡
+   日历打卡（独立项目、独立日期记录）
    ======================================================== */
 let calDate = new Date();
 let calSelected = null;
@@ -803,36 +932,37 @@ function renderCalendar(){
   const prevDays = new Date(y,m,0).getDate();
   const today = todayStr();
 
-  // 统计
-  let monthDays = 0, totalDays = 0;
-  Object.keys(data.records).forEach(d=>{
-    const r = data.records[d];
-    if(Object.keys(r).length>0){
-      totalDays++;
-      const dd = new Date(d);
-      if(dd.getFullYear()===y && dd.getMonth()===m) monthDays++;
-    }
+  // 计算本月哪些日期有打卡（任意项目）
+  const checkedDates = new Set();
+  const dates = calData.dates || {};
+  Object.keys(dates).forEach(id=>{
+    const arr = dates[id] || [];
+    arr.forEach(ds=>{
+      const dd = new Date(ds);
+      if(dd.getFullYear()===y && dd.getMonth()===m) checkedDates.add(ds);
+    });
   });
+
+  // 统计
+  let monthDays = checkedDates.size;
+  let totalDays = new Set();
+  Object.keys(dates).forEach(id=>{ (dates[id]||[]).forEach(ds=>totalDays.add(ds)); });
   $('#statMonth').textContent = monthDays;
-  $('#statTotal').textContent = totalDays;
-  $('#statStreak').textContent = calcStreak();
+  $('#statTotal').textContent = totalDays.size;
+  $('#statStreak').textContent = calcCalStreak();
 
   // 渲染日期
   const wrap = $('#calDays');
   wrap.innerHTML = '';
-  // 上月填充
   for(let i=firstDay-1;i>=0;i--){
-    const day = prevDays-i;
     const el = document.createElement('div');
     el.className = 'cal-day other-month';
-    el.textContent = day;
+    el.textContent = prevDays-i;
     wrap.appendChild(el);
   }
-  // 本月
   for(let d=1; d<=daysInMonth; d++){
     const ds = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const rec = data.records[ds]||{};
-    const hasCheck = Object.keys(rec).length>0;
+    const hasCheck = checkedDates.has(ds);
     const isToday = ds===today;
     const el = document.createElement('div');
     let cls = 'cal-day';
@@ -845,7 +975,6 @@ function renderCalendar(){
     el.addEventListener('click', ()=>{ calSelected = (calSelected===ds?null:ds); renderCalendar(); });
     wrap.appendChild(el);
   }
-  // 下月填充
   const total = firstDay + daysInMonth;
   const remain = (7 - total%7) % 7;
   for(let i=1;i<=remain;i++){
@@ -855,46 +984,248 @@ function renderCalendar(){
     wrap.appendChild(el);
   }
 
-  renderDetail();
+  renderCalDetail();
+  renderCalItems();
 }
 
-function calcStreak(){
-  // 从今天往前数连续打卡天数
+function calcCalStreak(){
   let streak = 0;
   let d = new Date();
+  const allDates = new Set();
+  Object.keys(calData.dates||{}).forEach(id=>{ (calData.dates[id]||[]).forEach(ds=>allDates.add(ds)); });
   while(true){
     const ds = fmtDate(d);
-    const rec = data.records[ds];
-    if(rec && Object.keys(rec).length>0){
-      streak++;
-      d.setDate(d.getDate()-1);
-    }else{
-      // 如果今天没打卡但昨天有，不算中断（今天可能还没结束）
-      if(streak===0){
-        d.setDate(d.getDate()-1);
-        const ds2 = fmtDate(d);
-        const rec2 = data.records[ds2];
-        if(rec2 && Object.keys(rec2).length>0){ continue; }
-      }
+    if(allDates.has(ds)){ streak++; d.setDate(d.getDate()-1); }
+    else{
+      if(streak===0){ d.setDate(d.getDate()-1); if(allDates.has(fmtDate(d))) continue; }
       break;
     }
   }
   return streak;
 }
 
-function renderDetail(){
+function renderCalDetail(){
   const detail = $('#calDetail');
   if(!calSelected){ detail.style.display='none'; return; }
-  const rec = data.records[calSelected]||{};
-  const items = data.items.filter(it=>rec[it.id]);
+  const dates = calData.dates || {};
+  const checkedItems = calData.items.filter(it=>{
+    const arr = dates[it.id] || [];
+    return arr.includes(calSelected);
+  });
   detail.style.display = 'block';
   $('#detailDate').textContent = calSelected;
   const list = $('#detailList');
-  if(items.length===0){
-    list.innerHTML = `<div class="cal-detail-empty">这一天还没有打卡记录哦</div>`;
+  if(checkedItems.length===0){
+    list.innerHTML = `<div class="cal-detail-empty">这一天还没有打卡项目哦</div>`;
   }else{
-    list.innerHTML = items.map(it=>`<div class="cal-detail-item">${escapeHtml(it.name)}</div>`).join('');
+    list.innerHTML = checkedItems.map(it=>`<div class="cal-detail-item">${escapeHtml(it.name)}</div>`).join('');
   }
+}
+
+// 日历打卡的项目列表渲染
+function renderCalItems(){
+  const container = $('#calItemList');
+  const items = calData.items;
+  const today = todayStr();
+  const dates = calData.dates || {};
+
+  if(items.length===0){
+    container.innerHTML = `<div class="empty-state cal-empty"><div class="emoji"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><div class="text">还没有日历打卡项目<br>点击下方输入框添加吧～</div></div>`;
+    return;
+  }
+
+  container.innerHTML = items.map(it=>{
+    const itemDates = dates[it.id] || [];
+    const todayChecked = itemDates.includes(today);
+    const y = calDate.getFullYear(), m = calDate.getMonth();
+    const monthCount = itemDates.filter(ds=>{
+      const dd = new Date(ds);
+      return dd.getFullYear()===y && dd.getMonth()===m;
+    }).length;
+    return `
+    <div class="check-item ${todayChecked?'done':''}">
+      <div class="check-circle ${todayChecked?'checked':''}" data-calid="${it.id}" data-action="toggle">
+        <span class="ck"></span>
+      </div>
+      <div class="item-name" contenteditable="true" data-calid="${it.id}">${escapeHtml(it.name)}</div>
+      <div class="item-time">本月 ${monthCount}次</div>
+      <button class="item-del" data-calid="${it.id}" data-action="delete" title="删除">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>`;
+  }).join('');
+
+  // 绑定事件
+  container.querySelectorAll('[data-action="toggle"]').forEach(c=>{
+    c.addEventListener('click', ()=>toggleCalCheck(c.dataset.calid));
+  });
+  container.querySelectorAll('.item-name').forEach(n=>{
+    n.addEventListener('blur', ()=>{
+      const v = n.textContent.trim();
+      const id = n.dataset.calid;
+      const it = calData.items.find(x=>x.id===id);
+      if(it && v){ it.name=v; saveCal(); }
+      else if(it && !v){ n.textContent = it.name; }
+    });
+    n.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); n.blur(); } });
+  });
+  container.querySelectorAll('[data-action="delete"]').forEach(b=>{
+    b.addEventListener('click', ()=>deleteCalItem(b.dataset.calid));
+  });
+}
+
+function addCalItem(){
+  const input = $('#calAddInput');
+  const name = input.value.trim();
+  if(!name){ showToast('请输入项目名称～'); input.focus(); return; }
+  if(calData.items.length>=20){ showToast('最多 20 个项目哦'); return; }
+  const item = { id:'ci_'+Date.now()+'_'+Math.random().toString(36).slice(2,6), name };
+  calData.items.push(item);
+  saveCal();
+  input.value='';
+  renderCalendar();
+  showToast('添加成功～');
+}
+
+function toggleCalCheck(id){
+  const today = todayStr();
+  if(!calData.dates) calData.dates = {};
+  if(!calData.dates[id]) calData.dates[id] = [];
+  const arr = calData.dates[id];
+  const idx = arr.indexOf(today);
+  if(idx>=0){
+    arr.splice(idx,1);
+  }else{
+    arr.push(today);
+  }
+  saveCal();
+  renderCalendar();
+}
+
+function deleteCalItem(id){
+  calData.items = calData.items.filter(x=>x.id!==id);
+  if(calData.dates[id]) delete calData.dates[id];
+  saveCal();
+  renderCalendar();
+  showToast('已删除～');
+}
+
+/* ========================================================
+   偶尔打卡（独立日历 + 选中日期 + 确认按钮）
+   ======================================================== */
+let occCalDate = new Date();
+let occSelected = new Set(); // 当前选中的日期
+
+function renderOccasional(){
+  const y = occCalDate.getFullYear();
+  const m = occCalDate.getMonth();
+  $('#occCalMonth').textContent = `${y}年${m+1}月`;
+  $('#occToday').textContent = `${m+1}月${new Date().getDate()}日`;
+
+  const firstDay = new Date(y,m,1).getDay();
+  const daysInMonth = new Date(y,m+1,0).getDate();
+  const prevDays = new Date(y,m,0).getDate();
+  const today = todayStr();
+
+  // 已打卡的日期集合
+  const doneSet = new Set(occData.dates);
+  // 本月统计
+  const monthDone = occData.dates.filter(ds=>{
+    const dd = new Date(ds);
+    return dd.getFullYear()===y && dd.getMonth()===m;
+  }).length;
+  $('#occStatMonth').textContent = monthDone;
+  $('#occStatTotal').textContent = occData.dates.length;
+  $('#occStatStreak').textContent = calcOccStreak();
+
+  // 清空当前页选中（切换月份重置选中）
+  occSelected.clear();
+  updateOccBtn();
+
+  // 渲染日历
+  const wrap = $('#occCalDays');
+  wrap.innerHTML = '';
+
+  // 上月填充
+  for(let i=firstDay-1;i>=0;i--){
+    const el = document.createElement('div');
+    el.className = 'cal-day other-month';
+    el.textContent = prevDays-i;
+    wrap.appendChild(el);
+  }
+  // 本月
+  for(let d=1; d<=daysInMonth; d++){
+    const ds = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isDone = doneSet.has(ds);
+    const isToday = ds===today;
+    const isSelected = occSelected.has(ds);
+    const el = document.createElement('div');
+    let cls = 'cal-day';
+    if(isToday) cls+=' today';
+    if(isDone) cls+=' has-check';
+    if(isSelected) cls+=' occ-selected';
+    el.className = cls;
+    el.dataset.date = ds;
+    el.innerHTML = `${d}${isDone?'<span class="dot"></span>':''}`;
+    el.addEventListener('click', ()=>{
+      if(isDone) return; // 已完成不能取消
+      if(occSelected.has(ds)){ occSelected.delete(ds); }
+      else{ occSelected.add(ds); }
+      updateOccBtn();
+      // 刷新视觉
+      el.classList.toggle('occ-selected');
+    });
+    wrap.appendChild(el);
+  }
+  // 下月填充
+  const total = firstDay + daysInMonth;
+  const remain = (7 - total%7) % 7;
+  for(let i=1;i<=remain;i++){
+    const el = document.createElement('div');
+    el.className = 'cal-day other-month';
+    el.textContent = i;
+    wrap.appendChild(el);
+  }
+}
+
+function calcOccStreak(){
+  let streak = 0;
+  let d = new Date();
+  const set = new Set(occData.dates);
+  while(true){
+    const ds = fmtDate(d);
+    if(set.has(ds)){ streak++; d.setDate(d.getDate()-1); }
+    else{
+      if(streak===0){ d.setDate(d.getDate()-1); if(set.has(fmtDate(d))) continue; }
+      break;
+    }
+  }
+  return streak;
+}
+
+function updateOccBtn(){
+  const info = $('#occSelectedInfo');
+  const btn = $('#occConfirmBtn');
+  const count = occSelected.size;
+  if(count===0){
+    info.textContent = '请点击日历选择日期';
+    btn.disabled = true;
+  }else{
+    const dates = Array.from(occSelected).sort();
+    info.textContent = `已选中 ${count} 天：${dates.join('、')}`;
+    btn.disabled = false;
+  }
+}
+
+function confirmOccCheck(){
+  if(occSelected.size===0) return;
+  const existing = new Set(occData.dates);
+  occSelected.forEach(ds=>existing.add(ds));
+  occData.dates = Array.from(existing).sort();
+  occSelected.clear();
+  saveOcc();
+  renderOccasional();
+  showToast('打卡成功～');
 }
 
 /* ========================================================
@@ -929,13 +1260,20 @@ function init(){
   renderNav();
 
   // 每日打卡
-  $('#addBtn').addEventListener('click', addItem);
-  $('#addItemInput').addEventListener('keydown', e=>{ if(e.key==='Enter') addItem(); });
+  $('#addBtn').addEventListener('click', addDailyItem);
+  $('#addItemInput').addEventListener('keydown', e=>{ if(e.key==='Enter') addDailyItem(); });
   renderDaily();
 
-  // 日历
+  // 日历打卡
+  $('#calAddBtn').addEventListener('click', addCalItem);
+  $('#calAddInput').addEventListener('keydown', e=>{ if(e.key==='Enter') addCalItem(); });
   $('#prevMonth').addEventListener('click', ()=>{ calDate.setMonth(calDate.getMonth()-1); renderCalendar(); });
   $('#nextMonth').addEventListener('click', ()=>{ calDate.setMonth(calDate.getMonth()+1); renderCalendar(); });
+
+  // 偶尔打卡
+  $('#occConfirmBtn').onclick = confirmOccCheck;
+  $('#occPrevMonth').onclick = ()=>{ occCalDate.setMonth(occCalDate.getMonth()-1); renderOccasional(); };
+  $('#occNextMonth').onclick = ()=>{ occCalDate.setMonth(occCalDate.getMonth()+1); renderOccasional(); };
 
   // 多标签检测（模拟设备连接）
   try{
@@ -945,12 +1283,21 @@ function init(){
     bc.onmessage = e=>{
       if(e.data==='ping'){ bc.postMessage('pong'); }
       if(e.data==='pong'){ gotPong=true; window._multiTab=true; updateSyncStatus(); }
-      if(e.data==='update'){ data=loadData(); if(currentTab==='daily') renderDaily(); else renderCalendar(); }
+      if(e.data==='update'){
+        dailyData = loadData(DAILY_KEY, { items:[], records:{} });
+        calData   = loadData(CAL_KEY,   { items:[], dates:{} });
+        occData   = loadData(OCC_KEY,   { dates:[] });
+        if(currentTab==='daily') renderDaily();
+        else if(currentTab==='calendar') renderCalendar();
+        else renderOccasional();
+      }
     };
     setTimeout(()=>{ if(gotPong){ window._multiTab=true; } updateSyncStatus(); }, 600);
     // 数据变更时广播
-    const _save = saveData;
-    window.saveData = function(){ _save(); bc.postMessage('update'); };
+    const _sd = saveDaily, _sc = saveCal, _so = saveOcc;
+    window.saveDaily = function(){ _sd(); bc.postMessage('update'); };
+    window.saveCal   = function(){ _sc(); bc.postMessage('update'); };
+    window.saveOcc   = function(){ _so(); bc.postMessage('update'); };
   }catch(e){ updateSyncStatus(); }
 
   // 每分钟刷新今日（跨天检测）
@@ -966,7 +1313,7 @@ document.addEventListener('DOMContentLoaded', init);
 
 // ====== PWA Service Worker 注册 ======
 if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('/sw.js').then(()=>{
+  navigator.serviceWorker.register('./sw.js').then(()=>{
     console.log('SW registered');
   }).catch(()=>{});
 }
